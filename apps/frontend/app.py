@@ -161,6 +161,14 @@ with st.sidebar:
     mine_lookup = {m["mine_name"]: m for m in mines}
     selected_name = st.selectbox("Operational mine", list(mine_lookup))
     selected = mine_lookup[selected_name]
+    try:
+        saved_targets = api_get("/exploration/targets").get("targets", [])
+    except Exception:
+        saved_targets = []
+    target_options = ["— New coordinate analysis —"] + [f'{t["name"]} · {t["created_at"][:10]}' for t in saved_targets]
+    target_choice = st.selectbox("Saved coordinate target", target_options, help="Saved coordinate targets are separate from operational mines.")
+    selected_target = saved_targets[target_options.index(target_choice) - 1] if target_choice != target_options[0] else None
+    load_target = st.button("Load saved coordinate result", use_container_width=True, disabled=selected_target is None)
     scenario_name = st.selectbox("Operating scenario", list(SCENARIOS))
     run = st.button("Run intelligence bundle", use_container_width=True, type="primary")
     st.divider()
@@ -181,6 +189,16 @@ if run:
             st.session_state["prediction"] = api_post("/predict/all", {"site_id": selected["site_id"], "scenario_file": SCENARIOS[scenario_name], "prospectivity_features": None})
         except Exception as exc:
             st.error(f"Prediction failed: {exc}")
+
+if load_target and selected_target:
+    with st.spinner("Loading saved coordinate evidence…"):
+        try:
+            saved = api_get(f'/exploration/targets/{selected_target["target_id"]}')
+            st.session_state["coordinate_prediction"] = {"target": saved, "models": saved.get("models", {}), "decision": saved.get("decision", {}), "feature_source": saved.get("feature_source"), "scenario_id": saved.get("scenario_id"), "limitations": []}
+            st.session_state["coordinate"] = {"latitude": saved["latitude"], "longitude": saved["longitude"]}
+            st.rerun()
+        except Exception as exc:
+            st.error(f"Saved coordinate result unavailable: {exc}")
 
 overview, evidence, exploration, provenance = st.tabs(["Overview", "Model evidence", "Exploration", "Provenance"])
 with overview:
@@ -222,6 +240,7 @@ if run_coordinate:
     with st.spinner("Extracting Earth Engine features for the selected coordinate…"):
         try:
             st.session_state["coordinate_prediction"] = api_post("/predict/coordinate", {"latitude": target_lat, "longitude": target_lon, "buffer_m": target_buffer, "target_name": target_name or None, "scenario_file": SCENARIOS[scenario_name]}, timeout=180)
+            api_get.clear()
             st.rerun()
         except Exception as exc:
             st.error(f"Coordinate analysis failed: {exc}")
@@ -234,6 +253,16 @@ with evidence:
         for start in range(0, len(items), 3):
             for column, (model_id, model_result) in zip(st.columns(3), items[start:start + 3]):
                 with column: render_model(model_id, model_result)
+        coordinate_result = st.session_state.get("coordinate_prediction")
+        if coordinate_result and coordinate_result.get("models"):
+            st.divider()
+            st.subheader("Saved coordinate model evidence")
+            target = coordinate_result.get("target", {})
+            st.caption(f'{target.get("name", "Unnamed target")} · {target.get("latitude", "—"):.6f}, {target.get("longitude", "—"):.6f} · {coordinate_result.get("feature_source", "—")}')
+            coordinate_items = list(coordinate_result["models"].items())
+            for start in range(0, len(coordinate_items), 3):
+                for column, (model_id, model_result) in zip(st.columns(3), coordinate_items[start:start + 3]):
+                    with column: render_model(model_id, model_result)
 
 with exploration:
     st.caption("The point layer is the existing Prospectivity v001 public/synthetic-fallback demonstration cache; it is not MOIL exploration ground truth.")
