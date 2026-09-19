@@ -28,6 +28,11 @@ html, body, [class*="css"], .stApp { font-family:FreeSans,'Libre Franklin',sans-
 h1,h2,h3,h4,h5,h6 { font-family:FreeSerif,'Libre Serif',serif !important; font-weight:700 !important; color:var(--forest) !important; }
 [data-testid="stSidebar"] { background:var(--forest); }
 [data-testid="stSidebar"] * { color:var(--ivory) !important; }
+[data-testid="stSidebar"] input, [data-testid="stSidebar"] textarea,
+[data-testid="stSidebar"] input[type="number"], [data-testid="stSidebar"] div[data-baseweb="input"] input { color:var(--ink) !important; -webkit-text-fill-color:var(--ink) !important; background:var(--ivory) !important; caret-color:var(--forest) !important; }
+[data-testid="stSidebar"] input::placeholder, [data-testid="stSidebar"] textarea::placeholder { color:var(--sage) !important; opacity:1 !important; }
+[data-testid="stSidebar"] [data-baseweb="select"] *, [data-testid="stSidebar"] [data-baseweb="select"] input { color:var(--ink) !important; -webkit-text-fill-color:var(--ink) !important; }
+[data-testid="stSidebar"] [data-baseweb="select"] { background:var(--ivory) !important; }
 .hero { padding:1.5rem 1.7rem; border-radius:18px; color:var(--ivory); background:linear-gradient(120deg,#2d4a2b,#566b4d); box-shadow:0 12px 36px #2d4a2b24; margin-bottom:1.2rem; }
 .hero h1 { color:var(--ivory) !important; margin:0; font-size:2.35rem; }.hero p { margin:.35rem 0 0; color:#e9eddc; }
 .status { display:inline-block; padding:.22rem .55rem; border-radius:999px; font-size:.75rem; font-weight:600; }
@@ -60,12 +65,68 @@ def render_model(model_id: str, result: dict) -> None:
     label = model_id.replace("_", " ").title()
     if model_id == "grade" and status == "LIVE": label = "Verified MOIL product-grade reference"
     if model_id == "production" and status == "LIVE": label = "Official MOIL historical production reference"
-    value = result.get("prediction") if result.get("prediction") is not None else result.get("reason")
-    st.markdown(
-        f'<div class="model-card"><span class="status {status}">{status}</span><h3>{label}</h3>'
-        f'<small>{result.get("model_version", "—")} · {result.get("data_source", "—")}</small>'
-        f'<pre>{json.dumps(value, indent=2, ensure_ascii=False)}</pre></div>', unsafe_allow_html=True,
-    )
+    prediction = result.get("prediction")
+    with st.container(border=True):
+        st.markdown(f'<span class="status {status}">{status}</span>', unsafe_allow_html=True)
+        st.markdown(f"### {label}")
+        st.caption(f'{result.get("model_version", "—")} · {result.get("data_source", "—")}')
+        if result.get("reason"):
+            st.warning(result["reason"])
+        if status == "UNAVAILABLE":
+            st.info("This model did not produce a result for the selected inputs.")
+        elif model_id == "blast":
+            score = float((prediction or {}).get("delay_risk", 0))
+            st.metric("Blast delay risk", f"{score:.0%}")
+            st.progress(max(0, min(1, score)))
+            st.caption("Scenario estimate · review blast schedule if elevated")
+        elif model_id == "equipment":
+            p = prediction or {}
+            a, b = st.columns(2)
+            a.metric("Availability", f'{p.get("availability_pct", "—")}%')
+            b.metric("Failure risk", f'{float(p.get("failure_risk", 0)):.0%}')
+            if p.get("equipment_id"): st.caption(f'Focus equipment · {p["equipment_id"]}')
+            if isinstance(p.get("availability_pct"), (int, float)):
+                st.progress(max(0, min(1, float(p["availability_pct"]) / 100)))
+        elif model_id == "grade":
+            p = prediction or {}
+            st.caption("Verified product reference · not an in-situ spatial prediction")
+            interval = p.get("interval", ["—", "—"])
+            a, b, c = st.columns(3)
+            a.metric("Mn grade", f'{p.get("mn_grade_percent", "—")}%')
+            b.metric("Reference interval", f'{interval[0]}–{interval[1]}%')
+            c.metric("Year", str(p.get("reference_year", "—")))
+            chemistry = p.get("chemistry") or {}
+            with st.expander("Assay chemistry"):
+                for col, (name, title) in zip(st.columns(4), [("mn_pct", "Mn"), ("fe_pct", "Fe"), ("sio2_pct", "SiO₂"), ("p_pct", "P")]):
+                    col.metric(title, f'{chemistry.get(name, "—")} wt%')
+        elif model_id == "production":
+            p = prediction or {}
+            st.caption("Official historical context · not a future forecast")
+            a, b, c = st.columns(3)
+            a.metric("Historical production", f'{float(p.get("historical_production_tonnes", 0)):,.0f} t')
+            b.metric("Reference year", str(p.get("reference_year", "—")))
+            c.metric("Average grade", str(p.get("average_grade_label", "—")))
+            if p.get("a_plus_b_tonnes") is not None:
+                st.metric("A+B resources/reserves reference", f'{float(p["a_plus_b_tonnes"]):,.0f} t')
+        elif model_id == "prospectivity":
+            score = float(prediction) if isinstance(prediction, (int, float)) else None
+            if score is not None:
+                st.metric("Prospectivity probability", f"{score:.1%}")
+                st.progress(max(0, min(1, score)))
+                if result.get("uncertainty") is not None: st.caption(f'Uncertainty proxy · ±{float(result["uncertainty"]):.1%}')
+                st.caption("Relative model score; not a reserve-tonnage estimate.")
+        elif model_id == "recovery":
+            value = (prediction or {}).get("expected_recovery_pct")
+            st.metric("Expected recovery", f"{value}%" if value is not None else "Unavailable")
+            st.caption("Scenario estimate")
+        elif model_id == "weather":
+            p = prediction or {}
+            a, b = st.columns(2)
+            a.metric("Rainfall forecast", f'{p.get("rainfall_mm_forecast", "—")} mm')
+            b.metric("Weather risk", str(p.get("risk", "—")))
+            st.caption("Scenario estimate · confirm with live weather feed")
+        else:
+            st.json(prediction)
 
 
 def lease_map(mine: dict, lease: dict, score_points: list[dict] | None = None) -> folium.Map:
