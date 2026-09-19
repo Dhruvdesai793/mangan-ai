@@ -1,0 +1,31 @@
+{
+  "scenario_id": "scenario_01_normal",
+  "mine": "Mine A",
+  "zone": "Zone C",
+  "narrative": "Normal operating conditions.",
+  "weather": {
+    "rainfall_mm_forecast": 8,
+    "risk": "LOW"
+  },
+  "equipment": {
+    "loader_id": "L4",
+    "availability_pct": 92,
+    "risk": "LOW"
+  },
+  "production": {
+    "target_tonnes": 1000,
+    "predicted_tonnes": 970,
+    "shortfall_probability": 0.12
+  },
+  "recovery": {
+    "expected_recovery_pct": 78
+  },
+  "blast": {
+    "delay_risk": 0.15
+  },
+  "grade": {
+    "mn_grade_percent": 40.5,
+    "interval_low": 37.0,
+    "interval_high": 43.5
+  }
+}

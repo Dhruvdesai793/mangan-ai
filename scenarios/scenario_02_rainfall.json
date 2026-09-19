@@ -1,0 +1,31 @@
+{
+  "scenario_id": "scenario_02_rainfall",
+  "mine": "Mine A",
+  "zone": "Zone C",
+  "narrative": "Heavy rainfall forecast reduces equipment availability, which cuts production and raises shortfall risk.",
+  "weather": {
+    "rainfall_mm_forecast": 65,
+    "risk": "HIGH"
+  },
+  "equipment": {
+    "loader_id": "L4",
+    "availability_pct": 58,
+    "risk": "HIGH"
+  },
+  "production": {
+    "target_tonnes": 1000,
+    "predicted_tonnes": 860,
+    "shortfall_probability": 0.81
+  },
+  "recovery": {
+    "expected_recovery_pct": 74
+  },
+  "blast": {
+    "delay_risk": 0.61
+  },
+  "grade": {
+    "mn_grade_percent": 38.7,
+    "interval_low": 34.5,
+    "interval_high": 42.3
+  }
+}

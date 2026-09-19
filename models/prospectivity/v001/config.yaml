@@ -1,0 +1,25 @@
+model_id: prospectivity
+version: v001
+status: LIVE
+type: ML
+input_mode: feature_vector
+data_source_label: PUBLIC_DATA_SYNTHETIC_FALLBACK
+algorithm: RandomForestClassifier
+preprocessing:
+  derived_features:
+    - b11_b12_ratio
+    - ferrous_index
+  categorical_encoding: one_hot(geology_class)
+input_required_fields:
+  - sentinel2_b2
+  - sentinel2_b3
+  - sentinel2_b4
+  - sentinel2_b8
+  - sentinel2_b11
+  - sentinel2_b12
+  - ndvi
+  - ndmi
+  - elevation_m
+  - slope_deg
+  - curvature
+  - geology_class

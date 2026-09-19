@@ -1,0 +1,7 @@
+model_id: grade
+version: demo_v001
+status: DEMO
+type: SIMULATION
+input_mode: scenario
+data_source_label: SYNTHETIC_SCENARIO
+note: Retained only as the legacy scenario simulator; not the selected registry version when grade/v001 is present.

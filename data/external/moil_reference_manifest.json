@@ -1,0 +1,23 @@
+{
+  "package_version": "v3",
+  "source_workbook": "data/external/MOIL_v12.xlsx",
+  "source_tabs": {
+    "sites": "USER_SOURCE_Sites",
+    "assays": "USER_SOURCE_Assays",
+    "ore_products": "USER_SOURCE_Ore Products",
+    "production": "HISTORICAL_MOIL_2012",
+    "master_identity": "MASTER_SITES",
+    "spatial_boundaries": "USER_SOURCE_Spatial Boundaries"
+  },
+  "canonical_outputs": [
+    "data/external/moil_site_catalog.csv",
+    "data/external/moil_grade_reference.csv",
+    "data/external/moil_production_reference.csv"
+  ],
+  "lease_geometry": "data/external/geometries/ngdr_moil_major_mining_leases_2022.geojson",
+  "limitations": [
+    "Grade reference values are verified product-grade specifications, not in-situ spatial assay targets.",
+    "Production reference values are FY2012 historical mine-level context, not a future forecast.",
+    "Prospectivity v001 remains on its existing public/synthetic fallback training source."
+  ]
+}

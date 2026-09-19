@@ -1,0 +1,11 @@
+site_id,mine_name,assay_id,sample_id,mn_grade_percent,mn_grade_min,mn_grade_max,fe_pct,sio2_pct,p_pct,mno2_pct,reference_year,units,method,source_id,verification_status,product_id,ore_category,product_form,primary_use
+MOIL-BAL-001,Balaghat Mine (Bharveli),ASY-001,BAL-PROD-2025,47.0,46.0,48.0,4.8,10.0,0.05,—,2025,wt%,Product spec,MOIL-DOC-001,verified_product_grade_not_in_situ,PRD-001,High-Grade Ferro Ore,Lump / fines,Ferro-manganese manufacturing
+MOIL-UKW-001,Ukwa Mine,ASY-002,UKW-PROD-2025,43.0,40.0,46.0,6.0,12.0,0.08,—,2025,wt%,Product spec,MOIL-DOC-001,verified_product_grade_not_in_situ,PRD-002,Ferro-Manganese Grade,Lump,Ferro-manganese alloy blending
+MOIL-TIR-001,Tirodi Mine,ASY-003,TIR-PROD-2025,41.0,38.0,44.0,8.0,14.0,0.1,—,2025,wt%,Product spec,MOIL-DOC-001,verified_product_grade_not_in_situ,PRD-003,Medium-Grade Ferro Ore,Lump,Silico-manganese smelting
+MOIL-SIT-001,Sitapatore / Sukli Mine,ASY-004,SIT-PROD-2025,37.5,35.0,40.0,9.0,18.0,0.12,—,2025,wt%,Product spec,MOIL-DOC-001,verified_product_grade_not_in_situ,PRD-004,Blast Furnace Grade,Lump,Silico-manganese / foundry
+MOIL-CHI-001,Chikla & Sitasaongi Mine,ASY-005,CHI-PROD-2025,46.0,44.0,48.0,5.0,11.0,0.06,—,2025,wt%,Product spec,MOIL-DOC-002,verified_product_grade,PRD-005,High-Grade Lump Ore,Lump,Ferro-alloy feed
+MOIL-DON-001,Dongri Buzurg Mine,ASY-006,DON-PROD-2025,45.0,42.0,48.0,3.0,—,—,78.0,2025,wt%,Product spec,MOIL-DOC-002,verified_product_grade,PRD-006,Manganese Dioxide Ore,Dioxide ore,"Dry-cell batteries, chemicals"
+MOIL-KAN-001,Kandri Mine,ASY-007,KAN-PROD-2025,47.0,46.0,48.0,4.5,9.5,0.05,—,2025,wt%,Product spec,MOIL-DOC-003,verified_product_grade,PRD-008,High-Grade Braunite Ore,Lump,Ferro-manganese
+MOIL-MAN-001,Mansar Mine,ASY-008,MAN-PROD-2025,40.0,38.0,42.0,6.5,13.0,0.09,—,2025,wt%,Product spec,MOIL-DOC-003,verified_product_grade,PRD-009,Silico-Manganese Grade,Lump,Silico-manganese smelting
+MOIL-GUM-001,Gumgaon Mine,ASY-009,GUM-PROD-2025,31.0,28.0,35.0,12.0,20.0,0.15,—,2025,wt%,Product spec,MOIL-DOC-003,verified_product_grade,PRD-010,Blast Furnace Grade,Lump / fines,Steel blast furnace flux
+MOIL-BEL-001,Beldongri Mine,ASY-010,BEL-PROD-2025,31.0,28.0,35.0,11.0,19.0,0.14,—,2025,wt%,Product spec,MOIL-DOC-003,verified_product_grade,PRD-011,Blast Furnace Grade,Lump / fines,Steel blast furnace flux

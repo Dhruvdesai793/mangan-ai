@@ -1,0 +1,43 @@
+{
+  "selected_model": "random_forest",
+  "selection_reason": "Comparable spatial-CV AUC to logistic regression and gradient-boosted trees, with usable feature importances for the exploration map.",
+  "spatial_cv_auc_mean": 0.9923309030307248,
+  "spatial_cv_auc_std": 0.00489872422092914,
+  "spatial_cv_average_precision": 0.9803168298443682,
+  "n_spatial_folds": 5,
+  "baseline_auc_in_sample": 0.767,
+  "ablation_no_spectral_bands_auc": 0.9793796290208613,
+  "all_candidates_compared": {
+    "baseline_geology_prevalence": {
+      "model": "geology_prevalence_baseline",
+      "auc_in_sample": 0.767
+    },
+    "logistic_regression": {
+      "auc_mean": 0.9946613375549415,
+      "auc_std": 0.004339026098944446,
+      "ap_mean": 0.9866130507371109,
+      "n_folds_used": 5
+    },
+    "random_forest": {
+      "auc_mean": 0.9923309030307248,
+      "auc_std": 0.00489872422092914,
+      "ap_mean": 0.9803168298443682,
+      "n_folds_used": 5
+    },
+    "gradient_boosted_trees": {
+      "auc_mean": 0.9917665084180506,
+      "auc_std": 0.004861572012783337,
+      "ap_mean": 0.9797539982060577,
+      "n_folds_used": 5,
+      "implementation": "sklearn.GradientBoostingClassifier (xgboost unavailable offline -- swap back when online)"
+    },
+    "ablation_random_forest_no_spectral_bands": {
+      "auc_mean": 0.9793796290208613,
+      "auc_std": 0.003051748068719909,
+      "ap_mean": 0.931806154253621,
+      "n_folds_used": 5
+    }
+  },
+  "validation_method": "GroupKFold(n_splits=5) grouped by spatial_fold_id (tile-grouped) -- not a random row split",
+  "important_note": "These metrics are computed on a SYNTHETIC public-fallback dataset (Route A). They demonstrate the training/validation pipeline works end to end and are NOT a claim of real-world or MOIL manganese-prospectivity accuracy. Retrain on Team 2's verified real dataset (Route B) before quoting any metric to a stakeholder as a real-world result."
+}

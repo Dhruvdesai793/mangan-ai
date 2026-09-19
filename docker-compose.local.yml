@@ -1,0 +1,29 @@
+# Workstation-only compatibility overrides. Deployments and CI should use docker-compose.yml alone.
+services:
+  migrate:
+    build:
+      context: .
+      network: host
+
+  api:
+    build:
+      context: .
+      network: host
+    network_mode: host
+    ports: !reset []
+    user: "${APP_UID:-1000}:${APP_GID:-1000}"
+    environment:
+      HOME: /tmp
+      DATABASE_URL: postgresql+psycopg://moil:${POSTGRES_PASSWORD:-moil_dev_password}@127.0.0.1:${POSTGRES_PORT:-5433}/moil_intelligence
+      MANGAN_ENV: production
+    volumes:
+      - ${GEE_CREDENTIALS_DIR}:/tmp/.config/earthengine:ro
+
+  frontend:
+    build:
+      context: .
+      network: host
+    network_mode: host
+    ports: !reset []
+    environment:
+      FRONTEND_API_URL: http://127.0.0.1:8000

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Team2VerifiedDataset",
+  "description": "Team1FeatureDataset plus Team 2's verification metadata. This is the schema the prospectivity training pipeline actually consumes (Route B). The public-data fallback pipeline (Route A) is transformed to match this exact schema so training code never has to know which route produced the data.",
+  "allOf": [
+    {"$ref": "team1_parquet_schema.json"},
+    {
+      "type": "object",
+      "properties": {
+        "duplicate_check_passed":   {"type": "boolean"},
+        "leakage_check_passed":     {"type": "boolean"},
+        "coordinate_valid":         {"type": "boolean"},
+        "spatial_fold_id":          {"type": "integer", "description": "assigned spatial block/fold for spatial cross-validation"},
+        "verification_report_id":   {"type": "string"},
+        "verified_timestamp":       {"type": "string", "format": "date-time"}
+      },
+      "required": ["duplicate_check_passed","leakage_check_passed","coordinate_valid",
+                   "spatial_fold_id","verification_report_id","verified_timestamp"]
+    }
+  ]
+}

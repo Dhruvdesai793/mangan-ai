@@ -1,0 +1,58 @@
+{
+  "blast": {
+    "version": "demo_v001",
+    "status": "DEMO",
+    "type": "SIMULATION",
+    "source": "SYNTHETIC_SCENARIO",
+    "predict_module": "models.blast.demo_v001.predict",
+    "input_mode": "scenario"
+  },
+  "equipment": {
+    "version": "demo_v001",
+    "status": "DEMO",
+    "type": "SIMULATION",
+    "source": "SYNTHETIC_SCENARIO",
+    "predict_module": "models.equipment.demo_v001.predict",
+    "input_mode": "scenario"
+  },
+  "grade": {
+    "version": "v001",
+    "status": "LIVE",
+    "type": "REFERENCE",
+    "source": "MOIL_VERIFIED_PRODUCT_ASSAYS",
+    "predict_module": "models.grade.v001.predict",
+    "input_mode": "site_reference"
+  },
+  "production": {
+    "version": "v001",
+    "status": "LIVE",
+    "type": "REFERENCE",
+    "source": "MOIL_HISTORICAL_2012",
+    "predict_module": "models.production.v001.predict",
+    "input_mode": "site_reference"
+  },
+  "prospectivity": {
+    "version": "v001",
+    "status": "LIVE",
+    "type": "ML",
+    "source": "PUBLIC_DATA_SYNTHETIC_FALLBACK",
+    "predict_module": "models.prospectivity.v001.predict",
+    "input_mode": "feature_vector"
+  },
+  "recovery": {
+    "version": "demo_v001",
+    "status": "DEMO",
+    "type": "SIMULATION",
+    "source": "SYNTHETIC_SCENARIO",
+    "predict_module": "models.recovery.demo_v001.predict",
+    "input_mode": "scenario"
+  },
+  "weather": {
+    "version": "demo_v001",
+    "status": "DEMO",
+    "type": "SIMULATION",
+    "source": "SYNTHETIC_SCENARIO",
+    "predict_module": "models.weather.demo_v001.predict",
+    "input_mode": "scenario"
+  }
+}

@@ -1,0 +1,161 @@
+"""MANGAN-AI Streamlit client. All domain data comes from FastAPI."""
+from __future__ import annotations
+
+import json
+import os
+from typing import Any
+
+import folium
+import httpx
+import plotly.graph_objects as go
+import streamlit as st
+from streamlit_folium import st_folium
+
+API_URL = os.getenv("FRONTEND_API_URL", "http://localhost:8000").rstrip("/")
+SCENARIOS = {
+    "Normal operations": "scenario_01_normal.json",
+    "Heavy rainfall": "scenario_02_rainfall.json",
+    "Equipment failure": "scenario_03_equipment_failure.json",
+}
+
+st.set_page_config(page_title="MANGAN-AI", page_icon="⛰️", layout="wide", initial_sidebar_state="expanded")
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600&family=Libre+Serif:wght@700&display=swap');
+:root { --forest:#2d4a2b; --sage:#7d8471; --olive:#a4ac86; --ivory:#faf9f6; --ink:#1d2a1c; }
+html, body, [class*="css"], .stApp { font-family:FreeSans,'Libre Franklin',sans-serif; color:var(--ink); }
+.stApp { background:linear-gradient(145deg,#faf9f6 0%,#f2f4ec 60%,#e8eddf 100%); }
+h1,h2,h3,h4,h5,h6 { font-family:FreeSerif,'Libre Serif',serif !important; font-weight:700 !important; color:var(--forest) !important; }
+[data-testid="stSidebar"] { background:var(--forest); }
+[data-testid="stSidebar"] * { color:var(--ivory) !important; }
+.hero { padding:1.5rem 1.7rem; border-radius:18px; color:var(--ivory); background:linear-gradient(120deg,#2d4a2b,#566b4d); box-shadow:0 12px 36px #2d4a2b24; margin-bottom:1.2rem; }
+.hero h1 { color:var(--ivory) !important; margin:0; font-size:2.35rem; }.hero p { margin:.35rem 0 0; color:#e9eddc; }
+.status { display:inline-block; padding:.22rem .55rem; border-radius:999px; font-size:.75rem; font-weight:600; }
+.LIVE { background:#dcebd6; color:#21451f; }.DEMO { background:#efe7bd; color:#675813; }.UNAVAILABLE { background:#ecd4cf; color:#762d24; }
+.model-card { background:#fffdf9; border:1px solid #dfe4d7; border-left:5px solid var(--olive); border-radius:13px; padding:1rem; min-height:205px; box-shadow:0 4px 18px #2d4a2b12; }
+.model-card pre { white-space:pre-wrap; font-size:.76rem; max-height:170px; overflow:auto; }
+.notice { border-radius:10px; padding:.75rem 1rem; background:#f1ead0; border:1px solid #d4c988; }
+.stButton>button { border-radius:10px; background:var(--forest); color:var(--ivory); border:0; font-weight:600; }
+</style>
+""", unsafe_allow_html=True)
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def api_get(path: str) -> Any:
+    with httpx.Client(timeout=30) as client:
+        response = client.get(f"{API_URL}{path}")
+        response.raise_for_status()
+        return response.json()
+
+
+def api_post(path: str, payload: dict, timeout: float = 120) -> Any:
+    with httpx.Client(timeout=timeout) as client:
+        response = client.post(f"{API_URL}{path}", json=payload)
+        response.raise_for_status()
+        return response.json()
+
+
+def render_model(model_id: str, result: dict) -> None:
+    status = result.get("status", "UNAVAILABLE")
+    label = model_id.replace("_", " ").title()
+    if model_id == "grade" and status == "LIVE": label = "Verified MOIL product-grade reference"
+    if model_id == "production" and status == "LIVE": label = "Official MOIL historical production reference"
+    value = result.get("prediction") if result.get("prediction") is not None else result.get("reason")
+    st.markdown(
+        f'<div class="model-card"><span class="status {status}">{status}</span><h3>{label}</h3>'
+        f'<small>{result.get("model_version", "—")} · {result.get("data_source", "—")}</small>'
+        f'<pre>{json.dumps(value, indent=2, ensure_ascii=False)}</pre></div>', unsafe_allow_html=True,
+    )
+
+
+def lease_map(mine: dict, lease: dict, score_points: list[dict] | None = None) -> folium.Map:
+    fmap = folium.Map(location=[mine["latitude"], mine["longitude"]], zoom_start=12, tiles="CartoDB positron")
+    if lease.get("features"):
+        layer = folium.GeoJson(
+            lease, name="Verified NGDR lease", style_function=lambda _f: {
+                "color": "#2d4a2b", "weight": 3, "fillColor": "#a4ac86", "fillOpacity": .24,
+            }, tooltip=folium.GeoJsonTooltip(fields=["official_lease_name", "site_id"], aliases=["Lease", "Site"]),
+        )
+        layer.add_to(fmap)
+        fmap.fit_bounds(layer.get_bounds())
+    folium.Marker([mine["latitude"], mine["longitude"]], tooltip=mine["mine_name"], popup=f'{mine["district"]}, {mine["state"]}', icon=folium.Icon(color="green", icon="info-sign")).add_to(fmap)
+    for point in score_points or []:
+        value = float(point["prospectivity"])
+        color = "#2d4a2b" if value >= .7 else "#a4ac86" if value >= .4 else "#c9b77d"
+        folium.CircleMarker([point["latitude"], point["longitude"]], radius=4, color=color, fill=True, fill_opacity=.65, tooltip=f"Score {value:.2f}").add_to(fmap)
+    folium.LayerControl().add_to(fmap)
+    return fmap
+
+
+st.markdown('<section class="hero"><h1>MANGAN-AI</h1><p>Evidence-led manganese mining intelligence · MOIL reference integration</p></section>', unsafe_allow_html=True)
+try:
+    health, mines = api_get("/health"), api_get("/mines")
+except Exception as exc:
+    st.error(f"FastAPI is not reachable at {API_URL}. Start the local stack and refresh. ({exc})")
+    st.stop()
+
+with st.sidebar:
+    st.header("Control room")
+    st.caption(f"API · {health.get('database', 'unknown')} database · GEE {health.get('gee', 'unknown')}")
+    mine_lookup = {m["mine_name"]: m for m in mines}
+    selected_name = st.selectbox("Operational mine", list(mine_lookup))
+    selected = mine_lookup[selected_name]
+    scenario_name = st.selectbox("Operating scenario", list(SCENARIOS))
+    run = st.button("Run intelligence bundle", use_container_width=True, type="primary")
+    st.divider()
+    st.caption("LIVE means the registered implementation executed. Grade and production are verified/historical references—not predictive models. DEMO modules remain scenario simulations.")
+
+if run:
+    with st.spinner("Building the evidence bundle…"):
+        try:
+            st.session_state["prediction"] = api_post("/predict/all", {"site_id": selected["site_id"], "scenario_file": SCENARIOS[scenario_name], "prospectivity_features": None})
+        except Exception as exc:
+            st.error(f"Prediction failed: {exc}")
+
+overview, evidence, exploration, provenance = st.tabs(["Overview", "Model evidence", "Exploration", "Provenance"])
+with overview:
+    a, b, c, d = st.columns(4)
+    a.metric("Mine", selected["mine_name"]); b.metric("District", selected["district"])
+    c.metric("Method", selected["mining_method"]); d.metric("Status", selected["operational_status"])
+    try:
+        lease = api_get(f'/mines/{selected["site_id"]}/leases')
+        st_folium(lease_map(selected, lease), use_container_width=True, height=480, returned_objects=[])
+    except Exception as exc: st.warning(f"Verified lease geometry unavailable: {exc}")
+    result = st.session_state.get("prediction")
+    if result:
+        decision = result["decision"]
+        st.subheader("Decision support")
+        x, y = st.columns([1, 3]); x.metric("Risk level", decision["risk_level"])
+        y.write("Primary drivers: " + (", ".join(decision["primary_drivers"]) or "No elevated drivers"))
+        st.caption(f'Prospectivity feature source · {result.get("feature_source") or "not available"}')
+        for action in decision["recommended_actions"]: st.info(f'{action["priority"]}: {action["action"]} — {action["reason"]}')
+        if result.get("limitations"): st.markdown('<div class="notice"><b>Limitations</b><br>' + "<br>".join(result["limitations"]) + "</div>", unsafe_allow_html=True)
+
+with evidence:
+    result = st.session_state.get("prediction")
+    if not result: st.info("Run the intelligence bundle from the sidebar to populate model evidence.")
+    else:
+        items = list(result["models"].items())
+        for start in range(0, len(items), 3):
+            for column, (model_id, model_result) in zip(st.columns(3), items[start:start + 3]):
+                with column: render_model(model_id, model_result)
+
+with exploration:
+    st.caption("The point layer is the existing Prospectivity v001 public/synthetic-fallback demonstration cache; it is not MOIL exploration ground truth.")
+    threshold = st.slider("Minimum prospectivity", 0.0, 1.0, 0.45, .05)
+    if st.button("Load prospectivity layer"):
+        try:
+            points = api_post("/exploration/map", {"limit": 500, "min_score": threshold})["points"]
+            lease = api_get(f'/mines/{selected["site_id"]}/leases')
+            st_folium(lease_map(selected, lease, points), use_container_width=True, height=530, returned_objects=[])
+            if points:
+                fig = go.Figure(go.Histogram(x=[p["prospectivity"] for p in points], marker_color="#2d4a2b"))
+                fig.update_layout(title="Prospectivity score distribution", paper_bgcolor="#faf9f6", plot_bgcolor="#faf9f6")
+                st.plotly_chart(fig, use_container_width=True)
+        except Exception as exc: st.error(f"Exploration layer failed: {exc}")
+
+with provenance:
+    st.subheader("Registry status"); st.json(api_get("/models"))
+    st.subheader("Latest persisted runs")
+    try: st.json(api_get(f'/mines/{selected["site_id"]}/predictions?limit=10'))
+    except Exception as exc: st.caption(f"Prediction history unavailable: {exc}")

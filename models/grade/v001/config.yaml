@@ -1,0 +1,8 @@
+model_id: grade
+version: v001
+status: LIVE
+type: REFERENCE
+input_mode: site_reference
+data_source_label: MOIL_VERIFIED_PRODUCT_ASSAYS
+algorithm: verified_reference_lookup
+scope: product_grade_reference_not_in_situ_spatial_prediction

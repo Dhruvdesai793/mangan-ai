@@ -1,0 +1,1 @@
+"""MANGAN-AI FastAPI package."""

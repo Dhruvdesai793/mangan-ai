@@ -1,0 +1,31 @@
+{
+  "baseline_geology_prevalence": {
+    "model": "geology_prevalence_baseline",
+    "auc_in_sample": 0.767
+  },
+  "logistic_regression": {
+    "auc_mean": 0.9946613375549415,
+    "auc_std": 0.004339026098944446,
+    "ap_mean": 0.9866130507371109,
+    "n_folds_used": 5
+  },
+  "random_forest": {
+    "auc_mean": 0.9923309030307248,
+    "auc_std": 0.00489872422092914,
+    "ap_mean": 0.9803168298443682,
+    "n_folds_used": 5
+  },
+  "gradient_boosted_trees": {
+    "auc_mean": 0.9917665084180506,
+    "auc_std": 0.004861572012783337,
+    "ap_mean": 0.9797539982060577,
+    "n_folds_used": 5,
+    "implementation": "sklearn.GradientBoostingClassifier (xgboost unavailable offline -- swap back when online)"
+  },
+  "ablation_random_forest_no_spectral_bands": {
+    "auc_mean": 0.9793796290208613,
+    "auc_std": 0.003051748068719909,
+    "ap_mean": 0.931806154253621,
+    "n_folds_used": 5
+  }
+}

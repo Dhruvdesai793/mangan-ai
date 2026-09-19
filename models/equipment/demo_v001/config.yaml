@@ -1,0 +1,6 @@
+model_id: equipment
+version: demo_v001
+status: DEMO
+type: SIMULATION
+input_mode: scenario
+data_source_label: SYNTHETIC_SCENARIO

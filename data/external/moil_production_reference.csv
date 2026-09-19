@@ -1,0 +1,11 @@
+site_id,mine_name,reference_year,historical_production_tonnes,average_grade_label,reserves_a_tonnes,resources_b_tonnes,a_plus_b_tonnes,interpretation_status
+MOIL-BAL-001,Balaghat Mine (Bharveli),2012,277329,40%,12206498,12070773,24277271,Individual mine in source
+MOIL-UKW-001,Ukwa Mine,2012,49671,38%,4283389,4420732,8704121,Individual mine in source
+MOIL-TIR-001,Tirodi Mine,2012,91586,32%,945263,454737,1400000,Individual mine in source
+MOIL-SIT-001,Sitapatore / Sukli Mine,2012,9274,30–32%,83705,320438,404143,GROUPED WITH SUKLI/SITAPATORE IN MOIL SOURCE — not a separate mine-only measurement
+MOIL-DON-001,Dongri Buzurg Mine,2012,298994,42%,5386161,6520573,11906734,Individual mine in source
+MOIL-CHI-001,Chikla & Sitasaongi Mine,2012,141701,36%,2865964,2235448,5101412,Individual mine in source
+MOIL-GUM-001,Gumgaon Mine,2012,58384,36%,2348316,1759864,4108180,Individual mine in source
+MOIL-KAN-001,Kandri Mine,2012,64669,30–38%,1699080,3834245,5533325,Individual mine in source
+MOIL-MAN-001,Mansar Mine,2012,54484,30–32%,734255,3905012,4639267,MOIL source labels this as Munsar/Mansar
+MOIL-BEL-001,Beldongri Mine,2012,24625,Mix Low Grade,546301,458984,1005285,"MOIL source labels this as Other (Beldongri/Satuk), not Beldongri-only"

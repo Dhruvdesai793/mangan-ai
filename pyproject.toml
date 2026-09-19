@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mangan-ai"
+version = "0.2.0"
+description = "MANGAN-AI mining intelligence prototype backend"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.128,<1",
+  "uvicorn[standard]>=0.48,<1",
+  "pydantic>=2.13,<3",
+  "pydantic-settings>=2.7,<3",
+  "httpx>=0.28,<1",
+  "numpy>=2.3,<3",
+  "pandas>=2.2,<3",
+  "scikit-learn>=1.8,<1.9",
+  "pyyaml>=6,<7",
+  "sqlalchemy>=2.0,<3",
+  "psycopg[binary]>=3.2,<4",
+  "alembic>=1.14,<2",
+  "geoalchemy2>=0.16,<1",
+  "shapely>=2.0,<3",
+  "earthengine-api>=1.5,<2",
+  "streamlit>=1.41,<2",
+  "streamlit-folium>=0.24,<1",
+  "plotly>=5.24,<7",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ModelResult",
+  "type": "object",
+  "required": ["model_id", "model_version", "status", "data_source", "prediction_timestamp"],
+  "properties": {
+    "model_id": {"type": "string"},
+    "model_version": {"type": "string"},
+    "status": {"type": "string", "enum": ["LIVE", "DEMO", "UNAVAILABLE"]},
+    "prediction": {},
+    "uncertainty": {"type": ["number", "null"]},
+    "data_source": {"type": "string"},
+    "prediction_timestamp": {"type": "string", "format": "date-time"},
+    "reason": {"type": ["string", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "UNAVAILABLE"}}},
+      "then": {"required": ["reason"]}
+    }
+  ]
+}

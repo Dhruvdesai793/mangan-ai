@@ -1,0 +1,11 @@
+site_id,mine_name,state,district,latitude,longitude,mining_method,operational_status,host_lithology,geology_unit,source_id
+MOIL-BAL-001,Balaghat Mine (Bharveli),Madhya Pradesh,Balaghat,21.855,80.231389,Deep Underground (>380 m),Active,Gondite / Manganese ore body,Balaghat belt,MOIL-DOC-001
+MOIL-UKW-001,Ukwa Mine,Madhya Pradesh,Balaghat,21.966667,80.466667,Underground,Active,Gondite-hosted,Balaghat belt,MOIL-DOC-001
+MOIL-TIR-001,Tirodi Mine,Madhya Pradesh,Balaghat,21.6875,79.725,Opencast,Active,Gondite / quartzite,Tirodi belt,MOIL-DOC-001
+MOIL-SIT-001,Sitapatore / Sukli Mine,Madhya Pradesh,Balaghat,21.716667,79.808333,Opencast,Active,Gondite-hosted,Balaghat belt,MOIL-DOC-001
+MOIL-CHI-001,Chikla & Sitasaongi Mine,Maharashtra,Bhandara,21.544264,79.768381,Underground,Active,Gondite / manganese ore body,Chikla–Sitasaongi belt,MOIL-DOC-002
+MOIL-DON-001,Dongri Buzurg Mine,Maharashtra,Bhandara,21.541667,79.6875,Opencast,Active,Gondite / manganese dioxide ore body,Dongri Buzurg belt,MOIL-DOC-002
+MOIL-KAN-001,Kandri Mine,Maharashtra,Nagpur,21.420833,79.275,Underground,Active,Gondite,Nagpur belt,MOIL-DOC-003
+MOIL-MAN-001,Mansar Mine,Maharashtra,Nagpur,21.4,79.283333,Underground / Opencast,Active,Gondite,Nagpur belt,MOIL-DOC-003
+MOIL-GUM-001,Gumgaon Mine,Maharashtra,Nagpur,21.416667,79.008333,Underground,Active,Spessartine-bearing Gondite,Nagpur belt,MOIL-DOC-003
+MOIL-BEL-001,Beldongri Mine,Maharashtra,Nagpur,21.358333,79.3,Underground,Active,Gondite,Nagpur belt,MOIL-DOC-003

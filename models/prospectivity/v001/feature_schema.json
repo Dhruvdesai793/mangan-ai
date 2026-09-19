@@ -1,0 +1,23 @@
+{
+  "feature_columns_in_order": [
+    "sentinel2_b2",
+    "sentinel2_b3",
+    "sentinel2_b4",
+    "sentinel2_b8",
+    "sentinel2_b11",
+    "sentinel2_b12",
+    "ndvi",
+    "ndmi",
+    "elevation_m",
+    "slope_deg",
+    "curvature",
+    "b11_b12_ratio",
+    "ferrous_index",
+    "geo_alluvium",
+    "geo_banded_iron_formation",
+    "geo_gondite",
+    "geo_granite_gneiss",
+    "geo_laterite"
+  ],
+  "n_features": 18
+}

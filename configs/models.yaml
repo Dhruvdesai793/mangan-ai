@@ -1,0 +1,5 @@
+# Central config the orchestrator (API/frontend side) can read if it wants
+# defaults, without duplicating what's already in schemas/model_registry.json.
+active_scenario_default: scenario_02_rainfall.json
+spatial_cv_folds: 5
+prospectivity_model_path: models/prospectivity/v001

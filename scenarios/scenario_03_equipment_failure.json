@@ -1,0 +1,31 @@
+{
+  "scenario_id": "scenario_03_equipment_failure",
+  "mine": "Mine A",
+  "zone": "Zone C",
+  "narrative": "Loader L4 unplanned downtime independent of weather; production and blast schedule both affected.",
+  "weather": {
+    "rainfall_mm_forecast": 5,
+    "risk": "LOW"
+  },
+  "equipment": {
+    "loader_id": "L4",
+    "availability_pct": 31,
+    "risk": "HIGH"
+  },
+  "production": {
+    "target_tonnes": 1000,
+    "predicted_tonnes": 705,
+    "shortfall_probability": 0.9
+  },
+  "recovery": {
+    "expected_recovery_pct": 71
+  },
+  "blast": {
+    "delay_risk": 0.74
+  },
+  "grade": {
+    "mn_grade_percent": 39.9,
+    "interval_low": 36.0,
+    "interval_high": 43.0
+  }
+}

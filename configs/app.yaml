@@ -1,0 +1,11 @@
+service_name: mangan-ai-api
+host: 0.0.0.0
+port: 8000
+allowed_origins:
+  - http://localhost:8501
+  - http://127.0.0.1:8501
+rate_limit:
+  requests: 120
+  window_seconds: 60
+max_request_body_bytes: 1048576
+model_map_cache_seconds: 300

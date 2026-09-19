@@ -1,0 +1,8 @@
+model_id: production
+version: v001
+status: LIVE
+type: REFERENCE
+input_mode: site_reference
+data_source_label: MOIL_HISTORICAL_2012
+algorithm: verified_historical_reference_lookup
+scope: historical_reference_not_future_forecast
