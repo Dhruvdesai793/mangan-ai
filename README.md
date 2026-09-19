@@ -38,9 +38,15 @@ docker compose -f docker-compose.yml -f docker-compose.local.yml exec api \
 curl -X POST http://localhost:8000/predict/all \
   -H 'Content-Type: application/json' \
   -d '{"site_id":"MOIL-BAL-001","scenario_file":"scenario_01_normal.json"}'
+
+curl -X POST http://localhost:8000/predict/coordinate \
+  -H 'Content-Type: application/json' \
+  -d '{"latitude":21.855,"longitude":80.231389,"buffer_m":250,"target_name":"Balaghat target"}'
 ```
 
 With Earth Engine enabled, omitting `prospectivity_features` makes the backend derive the feature vector from the verified lease/site area and cache it in Postgres. The response reports `feature_source` as `GOOGLE_EARTH_ENGINE` on first extraction or `POSTGRES_GEE_FEATURE_CACHE` on reuse. If Earth Engine is unavailable and `GEE_ALLOW_DEMO_FEATURES=true`, the response contains an explicit fallback limitation.
+
+`/predict/coordinate` accepts an arbitrary latitude/longitude and buffered AOI, runs the live Earth Engine feature path, persists the exploration target and prediction audit snapshot, and returns prospectivity plus the applicable scenario models. Mine-specific grade and production references are intentionally unavailable for an arbitrary coordinate.
 
 ## Architecture
 

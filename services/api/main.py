@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-from services.api.routes import exploration, health, jobs, mines, models, prediction, production
+from services.api.routes import exploration, health, jobs, mines, models, prediction, production, targets
 from services.api.security import log_request, new_request_id
 
 
@@ -95,6 +95,7 @@ def create_app() -> FastAPI:
     app.include_router(mines.router)
     app.include_router(models.router)
     app.include_router(jobs.router)
+    app.include_router(targets.router)
     return app
 
 

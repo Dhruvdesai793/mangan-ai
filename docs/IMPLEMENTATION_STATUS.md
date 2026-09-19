@@ -8,6 +8,7 @@ Updated 2026-09-20.
 - Registry-only model loading, typed request/response contracts, fault isolation, structured request IDs/logging, request-size bounds, CORS, and prediction rate limiting.
 - Live Prospectivity v001 execution with site-driven Sentinel-2 and SRTM feature extraction through Google Earth Engine.
 - Database-backed Earth Engine feature cache with explicit `feature_source` provenance.
+- Coordinate-based Earth Engine AOIs via `/predict/coordinate`, persisted exploration targets, and prediction audit snapshots.
 - Verified MOIL product-grade and official historical-production reference adapters.
 - PostgreSQL 17/PostGIS persistence, Alembic migration, idempotent seed, repository boundaries, prediction audit snapshots, and persisted job state.
 - Streamlit dashboard with verified lease map, model evidence, decision support, provenance, history, and explicit LIVE/DEMO disclosures.

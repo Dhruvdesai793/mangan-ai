@@ -85,6 +85,18 @@ class SatelliteFeature(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
 
 
+class ExplorationTarget(Base):
+    __tablename__ = "exploration_targets"
+    id: Mapped[str] = mapped_column(String(40), primary_key=True, default=lambda: f"target_{uuid.uuid4().hex[:20]}")
+    name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    latitude: Mapped[float] = mapped_column(Float)
+    longitude: Mapped[float] = mapped_column(Float)
+    buffer_m: Mapped[int] = mapped_column(Integer, default=250)
+    feature_source: Mapped[str] = mapped_column(String(160))
+    features: Mapped[dict] = mapped_column(JSON_TYPE)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+
+
 class PredictionRun(Base):
     __tablename__ = "prediction_runs"
     id: Mapped[str] = mapped_column(String(40), primary_key=True, default=lambda: f"pred_{uuid.uuid4().hex}")

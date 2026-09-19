@@ -50,6 +50,15 @@ class ProspectivityRequest(BaseModel):
     features: ProspectivityFeatures
 
 
+class CoordinatePredictionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+    buffer_m: int = Field(default=250, ge=30, le=5000)
+    scenario_file: str | None = Field(default=None, max_length=120)
+    target_name: str | None = Field(default=None, max_length=120)
+
+
 class ProductionRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

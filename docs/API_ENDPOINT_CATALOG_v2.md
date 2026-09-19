@@ -1,5 +1,11 @@
 # MANGAN-AI — API Endpoint Catalog
 
+## Coordinate exploration (phase 1)
+
+`POST /predict/coordinate` accepts `latitude`, `longitude`, optional `buffer_m`, `target_name`, and `scenario_file`. It extracts a buffered Earth Engine AOI, runs the applicable spatial/scenario models, stores the exploration target and prediction audit snapshot, and returns `feature_source`. Grade and production remain unavailable for arbitrary coordinates because they are mine-specific reference models.
+
+`GET /exploration/targets` returns the persisted coordinate target list.
+
 ## Health
 
 ```http

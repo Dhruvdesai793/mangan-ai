@@ -10,7 +10,7 @@ from services.orchestrator.orchestrator import PredictionOrchestrator
 from services.orchestrator.registry import ModelRegistry
 from services.providers.moil_reference import MoilReferenceProvider
 from config import get_settings
-from services.persistence.repositories import MineRepository, PredictionRepository, SatelliteFeatureRepository
+from services.persistence.repositories import ExplorationTargetRepository, MineRepository, PredictionRepository, SatelliteFeatureRepository
 from services.persistence.session import Database
 from services.providers.features import SiteFeatureService
 from services.providers.gee import GeeProvider
@@ -60,6 +60,16 @@ def get_site_feature_service() -> SiteFeatureService | None:
         return None
     cache = SatelliteFeatureRepository(get_database()) if database_available() else None
     return SiteFeatureService(GeeProvider(settings=settings, reference=get_moil_provider()), cache, settings)
+
+
+@lru_cache(maxsize=1)
+def get_gee_provider() -> GeeProvider:
+    return GeeProvider(settings=get_settings(), reference=get_moil_provider())
+
+
+@lru_cache(maxsize=1)
+def get_target_repository() -> ExplorationTargetRepository | None:
+    return ExplorationTargetRepository(get_database()) if database_available() else None
 
 
 @lru_cache(maxsize=1)

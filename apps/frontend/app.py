@@ -69,7 +69,7 @@ def render_model(model_id: str, result: dict) -> None:
 
 
 def lease_map(mine: dict, lease: dict, score_points: list[dict] | None = None) -> folium.Map:
-    fmap = folium.Map(location=[mine["latitude"], mine["longitude"]], zoom_start=12, tiles="CartoDB positron")
+    fmap = folium.Map(location=[mine["latitude"], mine["longitude"]], zoom_start=12, tiles="OpenStreetMap")
     if lease.get("features"):
         layer = folium.GeoJson(
             lease, name="Verified NGDR lease", style_function=lambda _f: {
@@ -103,6 +103,15 @@ with st.sidebar:
     scenario_name = st.selectbox("Operating scenario", list(SCENARIOS))
     run = st.button("Run intelligence bundle", use_container_width=True, type="primary")
     st.divider()
+    st.subheader("Coordinate analysis")
+    st.caption("Click the lease map or enter a coordinate to extract a buffered Earth Engine AOI.")
+    coordinate = st.session_state.get("coordinate", {"latitude": selected["latitude"], "longitude": selected["longitude"]})
+    target_lat = st.number_input("Latitude", min_value=-90.0, max_value=90.0, value=float(coordinate["latitude"]), format="%.6f", key="target_lat")
+    target_lon = st.number_input("Longitude", min_value=-180.0, max_value=180.0, value=float(coordinate["longitude"]), format="%.6f", key="target_lon")
+    target_buffer = st.number_input("AOI buffer (metres)", min_value=30, max_value=5000, value=250, step=10)
+    target_name = st.text_input("Target name", value="")
+    run_coordinate = st.button("Analyze selected coordinate", use_container_width=True)
+    st.divider()
     st.caption("LIVE means the registered implementation executed. Grade and production are verified/historical references—not predictive models. DEMO modules remain scenario simulations.")
 
 if run:
@@ -119,7 +128,10 @@ with overview:
     c.metric("Method", selected["mining_method"]); d.metric("Status", selected["operational_status"])
     try:
         lease = api_get(f'/mines/{selected["site_id"]}/leases')
-        st_folium(lease_map(selected, lease), use_container_width=True, height=480, returned_objects=[])
+        map_event = st_folium(lease_map(selected, lease), use_container_width=True, height=480, returned_objects=["last_clicked"])
+        if map_event and map_event.get("last_clicked"):
+            st.session_state["coordinate"] = {"latitude": map_event["last_clicked"]["lat"], "longitude": map_event["last_clicked"]["lng"]}
+            st.info(f'Coordinate selected: {map_event["last_clicked"]["lat"]:.6f}, {map_event["last_clicked"]["lng"]:.6f}. Click Analyze selected coordinate in the sidebar.')
     except Exception as exc: st.warning(f"Verified lease geometry unavailable: {exc}")
     result = st.session_state.get("prediction")
     if result:
@@ -130,6 +142,28 @@ with overview:
         st.caption(f'Prospectivity feature source · {result.get("feature_source") or "not available"}')
         for action in decision["recommended_actions"]: st.info(f'{action["priority"]}: {action["action"]} — {action["reason"]}')
         if result.get("limitations"): st.markdown('<div class="notice"><b>Limitations</b><br>' + "<br>".join(result["limitations"]) + "</div>", unsafe_allow_html=True)
+
+    coordinate_result = st.session_state.get("coordinate_prediction")
+    if coordinate_result:
+        st.subheader("Selected coordinate analysis")
+        target = coordinate_result.get("target", {})
+        prospectivity = coordinate_result.get("models", {}).get("prospectivity", {})
+        score = prospectivity.get("prediction")
+        a, b, c = st.columns(3)
+        a.metric("Prospectivity", f"{float(score):.1%}" if isinstance(score, (int, float)) else "Unavailable")
+        b.metric("Feature source", coordinate_result.get("feature_source", "—"))
+        c.metric("AOI buffer", f'{target.get("buffer_m", target_buffer)} m')
+        if isinstance(score, (int, float)):
+            st.progress(float(score), text="Relative model score; not a reserve tonnage estimate")
+        st.caption("Coordinate targets are persisted for reproducibility. Site-reference grade and production models are intentionally not inferred from arbitrary coordinates.")
+
+if run_coordinate:
+    with st.spinner("Extracting Earth Engine features for the selected coordinate…"):
+        try:
+            st.session_state["coordinate_prediction"] = api_post("/predict/coordinate", {"latitude": target_lat, "longitude": target_lon, "buffer_m": target_buffer, "target_name": target_name or None, "scenario_file": SCENARIOS[scenario_name]}, timeout=180)
+            st.rerun()
+        except Exception as exc:
+            st.error(f"Coordinate analysis failed: {exc}")
 
 with evidence:
     result = st.session_state.get("prediction")

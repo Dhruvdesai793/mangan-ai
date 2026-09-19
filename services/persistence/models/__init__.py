@@ -1,5 +1,6 @@
 from services.persistence.models.entities import (
     Base,
+    ExplorationTarget,
     GradeReference,
     Job,
     Mine,
@@ -11,5 +12,5 @@ from services.persistence.models.entities import (
 
 __all__ = [
     "Base", "Mine", "MineLease", "GradeReference", "ProductionReference",
-    "SatelliteFeature", "PredictionRun", "Job",
+    "SatelliteFeature", "ExplorationTarget", "PredictionRun", "Job",
 ]

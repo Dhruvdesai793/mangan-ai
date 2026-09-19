@@ -51,12 +51,30 @@ class GeeProvider:
                 f"Earth Engine extraction was unavailable ({type(exc).__name__}); explicitly enabled demo features were used.",
             )
 
+    def extract_point(self, latitude: float, longitude: float, buffer_m: int = 250) -> FeatureVector:
+        """Extract the feature contract for an arbitrary coordinate AOI."""
+        try:
+            if not self._initialized:
+                self.initialize()
+            import ee
+            aoi = ee.Geometry.Point([longitude, latitude]).buffer(buffer_m)
+            return FeatureVector(self._extract_geometry(aoi, geology_class="unknown"), "GOOGLE_EARTH_ENGINE")
+        except Exception as exc:
+            LOGGER.warning("GEE point extraction unavailable for %.6f,%.6f: %s", latitude, longitude, exc)
+            if not self.settings.gee_allow_demo_features:
+                raise
+            return FeatureVector(self._demo_features("MOIL-BAL-001"), "DEMO_GEE_FALLBACK", f"Earth Engine extraction was unavailable ({type(exc).__name__}); explicitly enabled demo features were used.")
+
     def _extract_gee(self, site_id: str) -> dict[str, Any]:
         import ee
         lease = self.reference.leases_for_site(site_id)
         if not lease["features"]:
             raise ValueError(f"no verified lease geometry exists for {site_id}")
         aoi = ee.Geometry(lease["features"][0]["geometry"])
+        return self._extract_geometry(aoi, geology_class=self._geology_class(site_id))
+
+    def _extract_geometry(self, aoi: Any, *, geology_class: str) -> dict[str, Any]:
+        import ee
 
         def mask_clouds(image):
             qa = image.select("QA60")
@@ -89,7 +107,7 @@ class GeeProvider:
         missing = [name for name in required if values.get(name) is None]
         if missing:
             raise RuntimeError(f"GEE result missing values: {missing}")
-        values["geology_class"] = self._geology_class(site_id)
+        values["geology_class"] = geology_class
         return {name: float(values[name]) if name != "geology_class" else values[name] for name in [*required, "geology_class"]}
 
     def _geology_class(self, site_id: str) -> str:

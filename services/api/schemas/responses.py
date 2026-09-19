@@ -50,6 +50,10 @@ class PredictAllResponse(BaseModel):
     limitations: list[str] = Field(default_factory=list)
 
 
+class CoordinatePredictionResponse(PredictAllResponse):
+    target: dict[str, Any]
+
+
 class MineResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
